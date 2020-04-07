@@ -1,0 +1,165 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'org.greenrobot.greendao'
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        applicationId "com.example.droidtemplate"
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+        testInstrumentationRunner rootProject.ext.dependencies["androidJUnitRunner"]
+        /**
+         *分包
+         */
+        multiDexEnabled true
+
+        ndk {
+            /**
+             *选择要添加的对应cpu类型的.so库 不能添加arm64-v8a 不然x5内核加载不上去
+             */
+
+            abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            /**
+             *还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+             */
+        }
+    }
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            buildConfigField "boolean", "USE_CANARY", "true"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            buildConfigField "boolean", "USE_CANARY", "false"
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        //就算您使用 AndroidStudio v3.0, 也需要配置以下参数才能使用Lambda 表达式
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+//greenDao配置
+greendao {
+    schemaVersion 1 // 数据库版本号
+    daoPackage 'com.example.droidtemplate.mvp.dao' //greenDao 自动生成的代码保存的包名
+    targetGenDir 'src/main/java' //自动生成的代码存储的路径，默认是 build/generated/source/greendao.
+    generateTests true //true的时候自动生成测试单元
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation rootProject.ext.dependencies["appcompat-v7"]
+    implementation rootProject.ext.dependencies["support-v4"]
+    implementation rootProject.ext.dependencies["design"]
+    implementation rootProject.ext.dependencies["recyclerview-v7"]
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //test
+    testImplementation rootProject.ext.dependencies["junit"]
+    debugImplementation rootProject.ext.dependencies["canary-debug"]
+    releaseImplementation rootProject.ext.dependencies["canary-release"]
+    testImplementation rootProject.ext.dependencies["canary-release"]
+
+    //mvparms框架
+    implementation 'me.jessyan:arms:2.5.2'
+
+    //---------------------- 以下是扩展库 ----------------------
+
+    //想使用 Glide 请依赖 arms-imageloader-glide 扩展库, 使用方式请看 #4.1
+    implementation 'me.jessyan:arms-imageloader-glide:2.5.2'
+
+    //想使用 AndroidAutoLayout 请依赖 arms-autolayout 扩展库, 使用方式请查看 #4.2
+    implementation 'me.jessyan:arms-autolayout:2.5.2'
+
+    //引人黄油刀和dagger2框架
+
+    //annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
+    annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
+
+    //依赖插件 //Butterknife 插件, 很多人因为没加这个而报错, 切记!!!
+    annotationProcessor(rootProject.ext.dependencies["butterknife-compiler"]) {
+        exclude module: 'support-annotations'
+    }
+    implementation rootProject.ext.dependencies["paginate"]
+    implementation rootProject.ext.dependencies["progressmanager"]
+    implementation rootProject.ext.dependencies["retrofit-url-manager"]
+    implementation rootProject.ext.dependencies["lifecyclemodel"]
+
+    //现在已经将 Demo 中的屏幕适配框架从 AndroidAutoLayout 替换为 AndroidAutoSize, AndroidAutoLayout 和 AndroidAutoSize 可以在项目中共存
+    //所以旧项目只要依赖 arms-autolayout 即可兼容之前的旧页面, 新页面可以使用 AndroidAutoSize 进行适配, 等有时间了再将旧页面全部替换为 AndroidAutoSize
+    implementation rootProject.ext.dependencies["autosize"]
+    //事件总线
+    implementation rootProject.ext.dependencies["eventbus"]
+    //android-bootstrap
+    implementation rootProject.ext.dependencies["android-bootstrap"]
+    //日志打印
+    implementation rootProject.ext.dependencies["logger"]
+    //加载动画
+    //implementation rootProject.ext.dependencies["Android-SpinKit"]
+    //Android工具类集
+    implementation rootProject.ext.dependencies["utilcode"]
+    //greenDao数据库框架
+    implementation rootProject.ext.dependencies["greendao"]
+    //图片预览，ZoomPreviewPicture
+    implementation rootProject.ext.dependencies["imagepreview"]
+    //侧滑添加删除，recyclerView
+    implementation rootProject.ext.dependencies["swiperecyclerview"]
+    //动画框架
+    implementation rootProject.ext.dependencies["lottie"]
+    //刷新控件
+    implementation rootProject.ext.dependencies["smartrefresh"]
+    //implementation rootProject.ext.dependencies["smartrefresh-header"]
+    //高德地图定位、2D地图（不适用）、3D地图、搜索
+    implementation rootProject.ext.dependencies["gaode-location"]
+    //implementation rootProject.ext.dependencies["gaode-map2d"]
+    implementation rootProject.ext.dependencies["gaode-map3d"]
+    implementation rootProject.ext.dependencies["gaode-search"]
+    //状态栏工具类
+    implementation rootProject.ext.dependencies["statusbarutil"]
+    //轮播
+    implementation rootProject.ext.dependencies["XBanner"]
+    //滚动公告
+    //implementation rootProject.ext.dependencies["marqueeLibrary"]
+    implementation rootProject.ext.dependencies["MarqueeView"]
+    //flycoTabLayout库
+    implementation rootProject.ext.dependencies["flycoTabLayout"]
+    //二维码扫描
+    implementation rootProject.ext.dependencies["bga-qrcode-zxing"]
+    //图片选择
+    implementation rootProject.ext.dependencies["bga-photopicker"]
+    implementation rootProject.ext.dependencies["bga-baseadapter"]
+    //版本更新
+    implementation rootProject.ext.dependencies["android-updatePlugin"]
+    //cookie管理
+    implementation rootProject.ext.dependencies["PersistentCookieJar"]
+    //slidinguppanel，主、副布局滑动
+    implementation rootProject.ext.dependencies["slidinguppanel"]
+    //字段验证
+    implementation rootProject.ext.dependencies["android-validation"]
+    //android-xpopup
+    implementation rootProject.ext.dependencies["android-xpopup"]
+
+    //录制音频库
+    implementation rootProject.ext.dependencies["ZlwAudioRecorder"]
+    //断点下载
+    implementation rootProject.ext.dependencies["okdownload-core"]
+    implementation rootProject.ext.dependencies["okdownload-sqlite"]
+    implementation rootProject.ext.dependencies["okdownload-okhttp"]
+
+}
